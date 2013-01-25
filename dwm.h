@@ -31,6 +31,7 @@ enum { NetSupported, NetWMName, NetWMState,
 enum { WMProtocols, WMDelete, WMState, WMTakeFocus, WMLast }; /* default atoms */
 enum { ClkTagBar, ClkLtSymbol, ClkStatusText, ClkWinTitle,
        ClkClientWin, ClkRootWin, ClkLast };             /* clicks */
+enum { StrutTop, StrutRight, StrutBottom, StrutLeft, StrutLast }; /* strut indexes */
 
 typedef union {
 	int i;
@@ -130,5 +131,6 @@ void arrange(Monitor *m);
 /* variables */
 
 extern Monitor *mons, *selmon;
+extern int struts[StrutLast];
 
 #endif

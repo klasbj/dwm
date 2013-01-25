@@ -13,6 +13,7 @@ static const unsigned int borderpx  = 1;        /* border pixel of windows */
 static const unsigned int snap      = 32;       /* snap pixel */
 static const Bool showbar           = True;     /* False means no bar */
 static const Bool topbar            = True;     /* False means bottom bar */
+int struts[StrutLast] = { 15, 0, 15, 0 };
 
 /* tagging */
 static const char *tags[] = { "1:web", "2", "3", "4", "5", "6", "7", "8", "9" };

@@ -132,6 +132,7 @@ static void updateclientlist(void);
 static void updatenumlockmask(void);
 static void updatesizehints(Client *c);
 static void updatestatus(void);
+static void updatestruts(Monitor *m);
 static void updatewindowtype(Client *c);
 static void updatetitle(Client *c);
 static void updatewmhints(Client *c);
@@ -177,6 +178,7 @@ static Window root;
 /* global variables */
 
 Monitor *mons = NULL, *selmon = NULL;
+
 
 /* configuration, allows nested code to access above variables */
 #include "config.h"
@@ -1157,8 +1159,6 @@ movemouse(const Arg *arg) {
 
 	if(!(c = selmon->sel))
 		return;
-	if(c->isfullscreen) /* no support moving fullscreen windows by mouse */
-		return;
 	restack(selmon);
 	ocx = c->x;
 	ocy = c->y;
@@ -1302,8 +1302,6 @@ resizemouse(const Arg *arg) {
 	XEvent ev;
 
 	if(!(c = selmon->sel))
-		return;
-	if(c->isfullscreen) /* no support resizing fullscreen windows by mouse */
 		return;
 	restack(selmon);
 	ocx = c->x;
@@ -1469,25 +1467,11 @@ setfullscreen(Client *c, Bool fullscreen) {
 		XChangeProperty(dpy, c->win, netatom[NetWMState], XA_ATOM, 32,
 		                PropModeReplace, (unsigned char*)&netatom[NetWMFullscreen], 1);
 		c->isfullscreen = True;
-		c->oldstate = c->isfloating;
-		c->oldbw = c->bw;
-		c->bw = 0;
-		c->isfloating = True;
-		resizeclient(c, c->mon->mx, c->mon->my, c->mon->mw, c->mon->mh);
-		XRaiseWindow(dpy, c->win);
 	}
 	else {
 		XChangeProperty(dpy, c->win, netatom[NetWMState], XA_ATOM, 32,
 		                PropModeReplace, (unsigned char*)0, 0);
 		c->isfullscreen = False;
-		c->isfloating = c->oldstate;
-		c->bw = c->oldbw;
-		c->x = c->oldx;
-		c->y = c->oldy;
-		c->w = c->oldw;
-		c->h = c->oldh;
-		resizeclient(c, c->x, c->y, c->w, c->h);
-		arrange(c->mon);
 	}
 }
 
@@ -1590,7 +1574,7 @@ showhide(Client *c) {
 		return;
 	if(ISVISIBLE(c)) { /* show clients top down */
 		XMoveWindow(dpy, c->win, c->x, c->y);
-		if((!c->mon->lt[c->mon->sellt]->arrange || c->isfloating) && !c->isfullscreen)
+		if((!c->mon->lt[c->mon->sellt]->arrange || c->isfloating))
 			resize(c, c->x, c->y, c->w, c->h, False);
 		showhide(c->snext);
 	}
@@ -1695,6 +1679,7 @@ tile(Monitor *m) {
 void
 togglebar(const Arg *arg) {
 	selmon->showbar = selmon->pertag->showbars[selmon->pertag->curtag] = !selmon->showbar;
+
 	updatebarpos(selmon);
 	XMoveResizeWindow(dpy, selmon->barwin, selmon->wx, selmon->by, selmon->ww, bh);
 	arrange(selmon);
@@ -1703,8 +1688,6 @@ togglebar(const Arg *arg) {
 void
 togglefloating(const Arg *arg) {
 	if(!selmon->sel)
-		return;
-	if(selmon->sel->isfullscreen) /* no support for fullscreen windows */
 		return;
 	selmon->sel->isfloating = !selmon->sel->isfloating || selmon->sel->isfixed;
 	if(selmon->sel->isfloating)
@@ -1834,15 +1817,28 @@ updatebars(void) {
 }
 
 void
+updatestruts(Monitor *m) {
+  if (m->showbar) {
+    m->wy = m->my + struts[StrutTop];
+    m->wx = m->mx + struts[StrutLeft];
+    m->ww = m->mw - struts[StrutLeft] - struts[StrutRight];
+    m->wh = m->mh - struts[StrutTop] - struts[StrutBottom];
+  } else {
+    m->wy = m->my;
+    m->wx = m->mx;
+    m->ww = m->mw;
+    m->wh = m->mh;
+  }
+}
+
+void
 updatebarpos(Monitor *m) {
-	m->wy = m->my;
-	m->wh = m->mh;
-	if(m->showbar) {
-		m->wh -= bh;
-		m->by = m->topbar ? m->wy : m->wy + m->wh;
-		m->wy = m->topbar ? m->wy + bh : m->wy;
+  updatestruts(m);
+
+/*	if(m->showbar) {
+		m->by = m->topbar ? m->wy - bh : m->wy + m->wh;
 	}
-	else
+	else*/
 		m->by = -bh;
 }
 
