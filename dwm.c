@@ -636,6 +636,7 @@ drawbar(Monitor *m) {
 	int x;
 	unsigned int i, occ = 0, urg = 0;
 	unsigned long *col;
+  const char *colstr;
 	Client *c;
 
 	for(c = m->clients; c; c = c->next) {
@@ -643,6 +644,8 @@ drawbar(Monitor *m) {
 		if(c->isurgent)
 			urg |= c->tags;
 	}
+
+#if DWMBAR > 0
 	dc.x = 0;
 	for(i = 0; i < LENGTH(tags); i++) {
 		dc.w = TEXTW(tags[i]);
@@ -680,6 +683,26 @@ drawbar(Monitor *m) {
 	}
 	XCopyArea(dpy, dc.drawable, m->barwin, dc.gc, 0, 0, m->ww, bh, 0, 0);
 	XSync(dpy, False);
+#else
+
+#define GOTO_TAG "^ca(1,xdotool key \"super+%d\")"
+#define END_GOTO "^ca()"
+
+  /* print interesting stuff to stdout */
+  printf("text dwm ");
+  for (i = 0; i < LENGTH(tags); i++) {
+		colstr = m->tagset[m->seltags] & 1 << i ? selfgcolor :
+     ( occ & 1 << i ? normfgcolor : emptyfgcolor );
+    /* TODO: add support for urgency */
+    printf(GOTO_TAG "#^fg(%s)%s^norm()^p(4)" END_GOTO, i+1, colstr, tags[i]);
+  }
+  printf("|%s|", m->ltsymbol);
+  if (m->sel)
+    printf("<#%s#>", m->sel->name);
+
+  printf("\n");
+  fflush(stdout);
+#endif
 }
 
 void
@@ -1835,11 +1858,15 @@ void
 updatebarpos(Monitor *m) {
   updatestruts(m);
 
-/*	if(m->showbar) {
+#if DWMBAR > 0
+	if(m->showbar) {
 		m->by = m->topbar ? m->wy - bh : m->wy + m->wh;
 	}
-	else*/
+	else
+#endif
+  {
 		m->by = -bh;
+  }
 }
 
 void
