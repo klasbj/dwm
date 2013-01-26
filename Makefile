@@ -3,7 +3,7 @@
 
 include config.mk
 
-SRC = util.c draw.c dwm.c movestack.c
+SRC = util.c draw.c dwm.c movestack.c selfrestart.c
 OBJ = ${SRC:.c=.o}
 
 all: options dwm
