@@ -54,6 +54,11 @@ static const Layout layouts[] = {
 /* commands */
 static const char *dmenucmd[] = { "dmenu_run", "-fn", font, "-nb", normbgcolor, "-nf", normfgcolor, "-sb", selbgcolor, "-sf", selfgcolor, NULL };
 static const char *termcmd[]  = { "xterm", NULL };
+static const char *audiomute[] = { "amixer", "-q", "sset", "Master", "toggle", NULL };
+static const char *audiolower[] = { "amixer", "-q", "sset", "Master", "3%-", NULL };
+static const char *audioraise[] = { "amixer", "-q", "sset", "Master", "3%+", NULL };
+static const char *backlightup[] = { "xbacklight", "+15", NULL };
+static const char *backlightdown[] = { "xbacklight", "-15", NULL };
 
 /* custom command functions */
 extern void movestack(const Arg *arg);
@@ -97,6 +102,15 @@ static Key keys[] = {
 	TAGKEYS(                        XK_9,                      8)
 	{ MODKEY|ShiftMask,             XK_q,      quit,           {0} },
 	{ MODKEY|ShiftMask,             XK_r,      self_restart,   {0} },
+  /* audio keys */
+  { 0,                            0x1008ff12, spawn,         {.v = audiomute } },
+  { 0,                            0x1008ff11, spawn,         {.v = audiolower } },
+  { 0,                            0x1008ff13, spawn,         {.v = audioraise } },
+  { 0,                            0x1008ff17, spawn,         {.v = audiolower } },
+  { 0,                            0x1008ff16, spawn,         {.v = audioraise } },
+  /* backlight keys */
+  { 0,                            0x1008ff02, spawn,         {.v = backlightup } },
+  { 0,                            0x1008ff03, spawn,         {.v = backlightdown } },
 };
 
 /* button definitions */
