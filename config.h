@@ -13,8 +13,8 @@ static const unsigned int borderpx  = 1;        /* border pixel of windows */
 static const unsigned int snap      = 32;       /* snap pixel */
 static const Bool showbar           = True;     /* False means no bar */
 static const Bool topbar            = True;     /* False means bottom bar */
-#define DWMBAR  1
-#define TWOMONS
+#define DWMBAR  0
+/*#define TWOMONS*/
 int struts[StrutLast] = { 15, 0, 15, 0 };
 
 /* tagging */
