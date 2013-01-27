@@ -144,6 +144,9 @@ static int xerrordummy(Display *dpy, XErrorEvent *ee);
 static int xerrorstart(Display *dpy, XErrorEvent *ee);
 static void zoom(const Arg *arg);
 
+static void setsbs_mfact(const Arg *arg);
+static void togglesbs_both(const Arg *arg);
+
 /* variables */
 static const char broken[] = "broken";
 static char stext[256];
@@ -182,6 +185,38 @@ Monitor *mons = NULL, *selmon = NULL;
 
 /* configuration, allows nested code to access above variables */
 #include "config.h"
+
+#ifdef TWOMONS
+static Bool sbs_both = True;
+static float sbs_mfact = 0.5;
+
+void
+togglesbs_both(const Arg *arg) {
+  sbs_both = !sbs_both;
+  if (updategeom()) {
+    XMoveResizeWindow(dpy, mons->barwin, mons->wx, mons->by, mons->ww, bh);
+    XMoveResizeWindow(dpy, mons->next->barwin, mons->next->wx, mons->next->by, mons->next->ww, bh);
+    arrange(NULL);
+  }
+}
+
+void
+setsbs_mfact(const Arg *arg) {
+	float f;
+
+	if(!arg)
+		return;
+	f = arg->f < 1.0 ? arg->f + sbs_mfact : 1.0;
+  if (f < 0.2 || f > .8) return;
+  sbs_mfact = f;
+  if (updategeom()) {
+    XMoveResizeWindow(dpy, mons->barwin, mons->wx, mons->by, mons->ww, bh);
+    XMoveResizeWindow(dpy, mons->next->barwin, mons->next->wx, mons->next->by, mons->next->ww, bh);
+    arrange(NULL);
+  }
+}
+
+#endif
 
 struct Pertag {
 	unsigned int curtag, prevtag; /* current and previous tag */
@@ -826,6 +861,13 @@ focusmon(const Arg *arg) {
 					in gedit and anjuta */
 	selmon = m;
 	focus(NULL);
+#ifdef TWOMONS
+  if (updategeom()) {
+    XMoveResizeWindow(dpy, mons->barwin, mons->wx, mons->by, mons->ww, bh);
+    XMoveResizeWindow(dpy, mons->next->barwin, mons->next->wx, mons->next->by, mons->next->ww, bh);
+    arrange(NULL);
+  }
+#endif
 }
 
 void
@@ -1009,7 +1051,7 @@ initfont(const char *fontstr) {
 	dc.font.height = dc.font.ascent + dc.font.descent;
 }
 
-#ifdef XINERAMA
+#if defined(XINERAMA) && !defined(TWOMONS)
 static Bool
 isuniquegeom(XineramaScreenInfo *unique, size_t n, XineramaScreenInfo *info) {
 	while(n--)
@@ -1886,7 +1928,7 @@ Bool
 updategeom(void) {
 	Bool dirty = False;
 
-#ifdef XINERAMA
+#if defined(XINERAMA) && !defined(TWOMONS)
 	if(XineramaIsActive(dpy)) {
 		int i, j, n, nn;
 		Client *c;
@@ -1948,6 +1990,52 @@ updategeom(void) {
 #endif /* XINERAMA */
 	/* default monitor setup */
 	{
+#ifdef TWOMONS
+    int lw, rw, lx, rx;
+    lw = sw * sbs_mfact;
+    rw = sw - lw;
+    lx = 0;
+    rx = lx + lw;
+
+
+    if (!sbs_both) {
+      if (selmon == mons->next) {
+        /* only show right */
+        lw = rw = sw;
+        lx = -lw;
+        rx = 0;
+      } else if (selmon == mons) {
+        /* only show left */
+        lw = rw = sw;
+        lx = 0;
+        rx = sw;
+      }
+    }
+
+		if(!mons) {
+			mons = createmon();
+      mons->next = createmon();
+      mons->next->mx = mons->mx + lw;
+    }
+
+    /* set up monitor 1 */
+    if(mons->mw != lw || mons->mh != sh || mons->mx != lx) {
+      dirty = True;
+      mons->mw = mons->ww = lw;
+      mons->mh = mons->wh = sh;
+      mons->mx = lx;
+      updatebarpos(mons);
+    }
+
+    /* set up monitor 2 */
+    if(mons->next->mw != rw || mons->next->mh != sh || mons->next->mx != rx) {
+      dirty = True;
+      mons->next->mw = mons->next->ww = rw;
+      mons->next->mh = mons->next->wh = sh;
+      mons->next->mx = rx;
+      updatebarpos(mons->next);
+    }
+#else
 		if(!mons)
 			mons = createmon();
 		if(mons->mw != sw || mons->mh != sh) {
@@ -1956,6 +2044,7 @@ updategeom(void) {
 			mons->mh = mons->wh = sh;
 			updatebarpos(mons);
 		}
+#endif
 	}
 	if(dirty) {
 		selmon = mons;
