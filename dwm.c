@@ -686,9 +686,10 @@ drawbar(Monitor *m) {
 	dc.x = 0;
 	for(i = 0; i < LENGTH(tags); i++) {
 		dc.w = TEXTW(tags[i]);
-		col = m->tagset[m->seltags] & 1 << i ? dc.sel :
-     ( occ & 1 << i ? dc.norm : dc.empty );
-		drawtext(tags[i], col, urg & 1 << i);
+		col = urg & 1 << i ? dc.urg :
+     ( m->tagset[m->seltags] & 1 << i ? dc.sel :
+     ( occ & 1 << i ? dc.norm : dc.empty ));
+		drawtext(tags[i], col, 0);
 /*		drawsquare(m == selmon && selmon->sel && selmon->sel->tags & 1 << i,
 		           occ & 1 << i, urg & 1 << i, col);*/
 		dc.x += dc.w;
@@ -728,9 +729,15 @@ drawbar(Monitor *m) {
   /* print interesting stuff to stdout */
   printf("text dwm ");
   for (i = 0; i < LENGTH(tags); i++) {
-		colstr = m->tagset[m->seltags] & 1 << i ? selfgcolor :
-     ( occ & 1 << i ? normfgcolor : emptyfgcolor );
-    /* TODO: add support for urgency */
+    if (urg & 1 << i) {
+      colstr = urgfgcolor;
+    } else if (m->tagset[m->seltags] & 1 << i) {
+      colstr = selfgcolor;
+    } else if (occ & 1 << i) {
+      colstr = normfgcolor;
+    } else {
+      colstr = emptyfgcolor;
+    }
     printf(GOTO_TAG "#^fg(%s)%s^norm()^p(4)" END_GOTO, i+1, colstr, tags[i]);
   }
   printf("|%s|", m->ltsymbol);
@@ -1608,6 +1615,9 @@ setup(void) {
 	dc.empty[ColBorder] = getcolor(normbordercolor);
 	dc.empty[ColBG] = getcolor(normbgcolor);
 	dc.empty[ColFG] = getcolor(emptyfgcolor);
+	dc.urg[ColBorder] = getcolor(urgbordercolor);
+	dc.urg[ColBG] = getcolor(normbgcolor);
+	dc.urg[ColFG] = getcolor(urgfgcolor);
 	dc.norm[ColBorder] = getcolor(normbordercolor);
 	dc.norm[ColBG] = getcolor(normbgcolor);
 	dc.norm[ColFG] = getcolor(normfgcolor);

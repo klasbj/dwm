@@ -68,6 +68,7 @@ struct Client {
 typedef struct {
 	int x, y, w, h;
 	unsigned long empty[ColLast];
+	unsigned long urg[ColLast];
 	unsigned long norm[ColLast];
 	unsigned long sel[ColLast];
 	Drawable drawable;
