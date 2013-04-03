@@ -29,7 +29,7 @@ static const Rule rules[] = {
 	 */
 	/* class      instance    title       tags mask     isfloating   monitor */
 	{ "Opera",    NULL,       NULL,       1 << 0,            False,       -1 },
-	{ "Steam",    NULL,       NULL,       1 << 8,            False,       -1 },
+	{ "Steam",    NULL,       NULL,       1 << 8,            False,       -1 ,
 };
 
 /* layout(s) */
