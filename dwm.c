@@ -727,7 +727,7 @@ drawbar(Monitor *m) {
 #define END_GOTO "^ca()"
 
   /* print interesting stuff to stdout */
-  printf("text dwm ");
+  printf("text dwm%d ", m->num);
   for (i = 0; i < LENGTH(tags); i++) {
     if (urg & 1 << i) {
       colstr = urgfgcolor;
@@ -741,8 +741,9 @@ drawbar(Monitor *m) {
     printf(GOTO_TAG "#^fg(%s)%s^norm()^p(4)" END_GOTO, i+1, colstr, tags[i]);
   }
   printf("|%s|", m->ltsymbol);
-  if (m->sel)
-    printf("<#%s#>", m->sel->name);
+  if (m->sel) {
+    printf("%s<#%s#>^norm()", m == selmon ? "^norm()" : "^low()", m->sel->name);
+  }
 
   printf("\n");
   fflush(stdout);
@@ -1970,6 +1971,7 @@ updategeom(void) {
 				|| (unique[i].x_org != m->mx || unique[i].y_org != m->my
 				    || unique[i].width != m->mw || unique[i].height != m->mh))
 				{
+          /* new screen or changed resolution */
 					dirty = True;
 					m->num = i;
 					m->mx = m->wx = unique[i].x_org;
@@ -1977,6 +1979,13 @@ updategeom(void) {
 					m->mw = m->ww = unique[i].width;
 					m->mh = m->wh = unique[i].height;
 					updatebarpos(m);
+#if DWMBAR < 1
+          fprintf(stderr, "screen %d %d %d %d %d\n",
+              m->num, m->mx, m->my, m->mw, m->mh);
+          printf("screen %d %d %d %d %d\n",
+              m->num, m->mx, m->my, m->mw, m->mh);
+          fflush(stdout);
+#endif
 				}
 		}
 		else { /* less monitors available nn < n */
