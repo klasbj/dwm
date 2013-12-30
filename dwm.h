@@ -20,17 +20,17 @@
 #define WIDTH(X)                ((X)->w + 2 * (X)->bw)
 #define HEIGHT(X)               ((X)->h + 2 * (X)->bw)
 #define TAGMASK                 ((1 << LENGTH(tags)) - 1)
-#define TEXTW(X)                (textnw(X, strlen(X)) + dc.font.height)
+#define TEXTW(X)                (drw_font_getexts_width(drw->font, X, strlen(X)) + drw->font->h)
 
 /* enums */
-enum { CurNormal, CurResize, CurMove, CurLast };        /* cursor */
-enum { ColBorder, ColFG, ColBG, ColLast };              /* color */
+enum { CurNormal, CurResize, CurMove, CurLast }; /* cursor */
+enum { SchemeEmpty, SchemeUrg, SchemeNorm, SchemeSel, SchemeLast }; /* color schemes */
 enum { NetSupported, NetWMName, NetWMState,
        NetWMFullscreen, NetActiveWindow, NetWMWindowType,
-       NetWMWindowTypeDialog, NetClientList, NetLast };     /* EWMH atoms */
+       NetWMWindowTypeDialog, NetClientList, NetLast }; /* EWMH atoms */
 enum { WMProtocols, WMDelete, WMState, WMTakeFocus, WMLast }; /* default atoms */
 enum { ClkTagBar, ClkLtSymbol, ClkStatusText, ClkWinTitle,
-       ClkClientWin, ClkRootWin, ClkLast };             /* clicks */
+       ClkClientWin, ClkRootWin, ClkLast }; /* clicks */
 enum { StrutTop, StrutRight, StrutBottom, StrutLeft, StrutLast }; /* strut indexes */
 
 typedef union {
@@ -64,23 +64,6 @@ struct Client {
 	Monitor *mon;
 	Window win;
 };
-
-typedef struct {
-	int x, y, w, h;
-	unsigned long empty[ColLast];
-	unsigned long urg[ColLast];
-	unsigned long norm[ColLast];
-	unsigned long sel[ColLast];
-	Drawable drawable;
-	GC gc;
-	struct {
-		int ascent;
-		int descent;
-		int height;
-		XFontSet set;
-		XFontStruct *xfont;
-	} font;
-} DC; /* draw context */
 
 typedef struct {
 	unsigned int mod;
