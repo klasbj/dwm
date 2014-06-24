@@ -72,6 +72,8 @@ static const char *audiolower[] = { "amixer", "-q", "sset", "Master", "3%-", NUL
 static const char *audioraise[] = { "amixer", "-q", "sset", "Master", "3%+", NULL };
 static const char *backlightup[] = { "xbacklight", "+15", NULL };
 static const char *backlightdown[] = { "xbacklight", "-15", NULL };
+static const char *kbdlightup[] = { "asus-kbd-backlight", "up", NULL };
+static const char *kbdlightdown[] = { "asus-kbd-backlight", "down", NULL };
 
 /* custom command functions */
 extern void movestack(const Arg *arg);
@@ -129,6 +131,9 @@ static Key keys[] = {
   /* backlight keys */
   { 0,                            0x1008ff02, spawn,         {.v = backlightup } },
   { 0,                            0x1008ff03, spawn,         {.v = backlightdown } },
+  /* kbd backlight keys */
+  { 0,                            0x1008ff05, spawn,         {.v = kbdlightup } },
+  { 0,                            0x1008ff06, spawn,         {.v = kbdlightdown } },
 };
 
 /* button definitions */
