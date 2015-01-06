@@ -74,6 +74,8 @@ static const char *backlightup[] = { "xbacklight", "+15", NULL };
 static const char *backlightdown[] = { "xbacklight", "-15", NULL };
 static const char *kbdlightup[] = { "asus-kbd-backlight", "up", NULL };
 static const char *kbdlightdown[] = { "asus-kbd-backlight", "down", NULL };
+static const char *keymapse[] = { "swkbd", "se", NULL };
+static const char *keymapen[] = { "swkbd", "us", NULL };
 
 /* custom command functions */
 extern void movestack(const Arg *arg);
@@ -83,6 +85,8 @@ static Key keys[] = {
 	/* modifier                     key        function        argument */
 	{ MODKEY,                       XK_p,      spawn,          {.v = dmenucmd } },
 	{ MODKEY,                       XK_Return, spawn,          {.v = termcmd } },
+	{ MODKEY,                       XK_s,      spawn,          {.v = keymapse } },
+	{ MODKEY,                       XK_e,      spawn,          {.v = keymapen } },
 	{ MODKEY,                       XK_b,      togglebar,      {0} },
 	{ MODKEY,                       XK_j,      focusstack,     {.i = +1 } },
 	{ MODKEY,                       XK_k,      focusstack,     {.i = -1 } },
