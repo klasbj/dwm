@@ -718,26 +718,25 @@ drawbar(Monitor *m) {
 #define END_GOTO "^ca()"
 
   /* print interesting stuff to stdout */
-  printf("text dwm%d ", m->num);
+  printf("text dwmws%d", m->num);
   for (i = 0; i < LENGTH(tags); i++) {
-    const char * colstr = NULL;
+    char colstr[] = {0,0,0,0,0,0};
     if (urg & 1 << i) {
-      colstr = urgfgcolor;
+      strcat(colstr, "!");
     } else if (m->tagset[m->seltags] & 1 << i) {
-      colstr = selfgcolor;
+      strcat(colstr, "^");
     } else if (occ & 1 << i) {
-      colstr = normfgcolor;
-    } else {
-      colstr = emptyfgcolor;
+      strcat(colstr, "$");
     }
-    printf(GOTO_TAG "#^fg(%s)%s^norm()^p(4)" END_GOTO, i+1, colstr, tags[i]);
+    printf(" %s%s", colstr, tags[i]);
   }
-  printf("|%s|", m->ltsymbol);
-  if (m->sel) {
-    printf("%s<#%s#>^norm()", m == selmon ? "^norm()" : "^low()", m->sel->name);
-  }
-
   printf("\n");
+  printf("text dwmlt%d %s\n", m->num, m->ltsymbol);
+  if (m->sel) {
+    printf("text dwmtitle%d %s\n", m->num, m->sel->name);//m == selmon ? "^norm()" : "^low()", m->sel->name);
+  } else {
+    printf("text dwmtitle%d\n", m->num);
+  }
   fflush(stdout);
 #endif
 }

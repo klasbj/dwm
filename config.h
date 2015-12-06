@@ -1,16 +1,16 @@
 /* See LICENSE file for copyright and license details. */
 
 /* appearance */
-static const char font[]            = "-*-terminus-medium-r-*-*-12-*-*-*-*-*-*-*";
-static const char normbordercolor[] = "#2e3436";
-static const char normbgcolor[]     = "#000000";
-static const char normfgcolor[]     = "#e0ffff";
+static const char font[]            = "-*-monospace-medium-r-*-*-9-*-*-*-*-*-*-*";
+static const char normbordercolor[] = "#262626";
+static const char normbgcolor[]     = "#1c1c1c";
+static const char normfgcolor[]     = "#9e9e9e";
 static const char emptyfgcolor[]    = "#2e3436";
 static const char urgfgcolor[]      = "#f1281e";
-static const char urgbordercolor[]  = "#f1281e";
-static const char selbordercolor[]  = "#1994d1";
-static const char selbgcolor[]      = "#000000";
-static const char selfgcolor[]      = "#1994d1";
+static const char urgbordercolor[]  = "#ff7e3d";
+static const char selbordercolor[]  = "#00009c";
+static const char selbgcolor[]      = "#1c1c1c";
+static const char selfgcolor[]      = "#3d3dff";
 static const unsigned int borderpx  = 1;        /* border pixel of windows */
 static const unsigned int snap      = 32;       /* snap pixel */
 static const Bool showbar           = True;     /* False means no bar */
